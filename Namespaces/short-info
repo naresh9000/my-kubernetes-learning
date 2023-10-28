@@ -101,5 +101,31 @@ Kubernetes cluster, helping you organize and isolate resources for different
 applications, teams, or purposes.
 
 
+********************
+
+To determine the current namespace you are using in Kubernetes, 
+you can use the kubectl command-line tool. There are a few methods to 
+find out the active namespace:
+
+Using kubectl with config view:
+
+You can use the kubectl config view command to see the current context, 
+which includes information about the active namespace. The current context is 
+indicated by the current-context field.
+
+
+kubectl config view --minify --output 'jsonpath={..namespace}'
+This command will display the current namespace.
+
+Using kubectl with config current-context:
+
+Another method to find the current context, including the active namespace, 
+is to use kubectl config current-context:
+
+
+kubectl config current-context
+The output will show the name of the context, which typically includes the namespace
+
+
 
 
