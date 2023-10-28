@@ -1,0 +1,82 @@
+In Kubernetes, "ResourceQuota" and "LimitRange" are mechanisms to control and manage resource consumption within namespaces. They help ensure that the resources used by Pods and containers are controlled, limited, 
+and monitored to maintain the stability and reliability of the Kubernetes cluster.
+
+ResourceQuota:
+
+A ResourceQuota is a policy resource used to limit resource consumption for objects in a namespace.
+It specifies constraints for a namespace, such as the maximum amount of CPU and memory that can be used, the maximum number of Pods that can be created, and the maximum number of services, persistent volume claims, and other resources.
+ResourceQuotas are used to prevent resource hogging, resource conflicts, and overuse of resources within a namespace.
+When a ResourceQuota is set, it applies to all Pods and containers within that namespace, and attempts to create new resources that would violate the quota are rejected.
+LimitRange:
+
+A LimitRange is a resource policy that defines default and maximum resource limits for containers within a namespace.
+It is used to set limits on individual container resources like CPU and memory.
+LimitRanges help in maintaining the desired resource consumption by specifying limits for each container, and they can also set default limits if none are specified explicitly.
+If a container's resource limits exceed the defined LimitRange, the resource request is rejected.
+LimitRanges are especially useful when working with namespaces where not all resource constraints are explicitly set on a per-container basis.
+Both ResourceQuotas and LimitRanges are valuable for cluster administrators and developers to ensure resource fairness, prevent resource exhaustion, and maintain the quality of service in a Kubernetes cluster.
+
+To use these features effectively, it's essential to define ResourceQuotas and LimitRanges in your namespace manifests and monitor resource usage. They can help you optimize resource allocation and prevent resource-related issues within your Kubernetes workloads
+
+
+********
+EXAMPLES
+**********
+
+In Kubernetes, you can use resource quotas and limit ranges to define resource policies for namespaces. Here are examples of manifest files for defining resource quotas and limit ranges within a namespace:
+
+Resource Quota Example (resource-quota.yaml):
+
+This resource quota ensures that the namespace doesn't exceed certain resource limits, such as CPU and memory.
+
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: example-resource-quota
+spec:
+  hard:
+    pods: "10"           # Maximum number of pods in the namespace
+    requests.cpu: "4"    # Maximum total CPU requests (cores)
+    requests.memory: 4Gi # Maximum total memory requests
+    limits.cpu: "6"      # Maximum total CPU limits (cores)
+    limits.memory: 6Gi   # Maximum total memory limits
+In this example, the resource quota limits the number of pods and sets maximum CPU and memory requests and limits for the namespace.
+
+Limit Range Example (limit-range.yaml):
+
+A limit range defines constraints on pod resource requests and limits. It specifies default and minimum/maximum values for each resource (e.g., CPU and memory).
+
+yaml
+Copy code
+apiVersion: "v1"
+kind: "LimitRange"
+metadata:
+  name: "example-limit-range"
+spec:
+  limits:
+  - type: "Container"
+    default:
+      cpu: "0.5"    # Default CPU request per container
+      memory: "512Mi" # Default memory request per container
+    defaultRequest:
+      cpu: "0.2"    # Default CPU limit per container
+      memory: "256Mi" # Default memory limit per container
+    min:
+      cpu: "0.1"    # Minimum CPU request per container
+      memory: "64Mi" # Minimum memory request per container
+    max:
+      cpu: "1"      # Maximum CPU request per container
+      memory: "1Gi"   # Maximum memory request per container
+This limit range sets constraints on CPU and memory requests and limits for containers within pods in the namespace.
+
+To apply these policies, you can create the respective ResourceQuota and LimitRange resources in your namespace. For example, using kubectl:
+
+
+kubectl apply -f resource-quota.yaml -n your-namespace
+kubectl apply -f limit-range.yaml -n your-namespace
+These policies will help manage resources and ensure that pods and containers within your namespace adhere to specified resource constraints. Adjust the values in the manifests as needed for your use case.
+
+
+
+
